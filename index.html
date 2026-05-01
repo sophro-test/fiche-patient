@@ -1,0 +1,1522 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fiche Patient — Sophrologie</title>
+<style>
+/* ===== Reset & Variables ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --primary:       #4A7C8E;
+  --primary-light: #7FB5B5;
+  --primary-dark:  #2E5F70;
+  --accent:        #8DAF8D;
+  --warm:          #7A5C3E;
+  --warm-light:    #F0AD6A;
+  --bg:            #F0F4F7;
+  --white:         #FFFFFF;
+  --text:          #2C3E50;
+  --muted:         #6B7E8C;
+  --border:        #D0DDE5;
+  --shadow:        0 2px 10px rgba(0,0,0,0.08);
+  --radius:        8px;
+  --sidebar:       242px;
+  --header:        62px;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+/* ===== Header ===== */
+.app-header {
+  background: var(--primary-dark);
+  color: white;
+  padding: 0 24px;
+  height: var(--header);
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+}
+
+.header-brand h1 { font-size: 17px; font-weight: 600; letter-spacing: 0.2px; }
+.header-brand p  { font-size: 11px; opacity: 0.7; margin-top: 1px; }
+
+.header-actions { display: flex; gap: 8px; }
+
+/* ===== Buttons ===== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12.5px;
+  font-weight: 500;
+  font-family: inherit;
+  transition: background 0.18s, transform 0.1s;
+}
+.btn:active { transform: scale(0.97); }
+
+.btn-ghost  { background: rgba(255,255,255,0.12); color: white; border: 1px solid rgba(255,255,255,0.25); }
+.btn-ghost:hover  { background: rgba(255,255,255,0.22); }
+.btn-teal   { background: var(--primary-light); color: white; }
+.btn-teal:hover   { background: var(--primary); }
+.btn-green  { background: var(--accent); color: white; }
+.btn-green:hover  { background: #6B9A6B; }
+
+/* ===== Progress bar ===== */
+.progress-bar {
+  position: fixed;
+  top: var(--header);
+  left: var(--sidebar);
+  right: 0;
+  height: 3px;
+  background: var(--border);
+  z-index: 100;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-light), var(--accent));
+  transition: width 0.3s ease;
+  width: 0%;
+}
+
+/* ===== Layout ===== */
+.app-body {
+  display: flex;
+  margin-top: var(--header);
+  min-height: calc(100vh - var(--header));
+}
+
+/* ===== Sidebar ===== */
+.sidebar {
+  width: var(--sidebar);
+  position: fixed;
+  top: var(--header);
+  bottom: 0;
+  left: 0;
+  background: var(--white);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 18px 0 24px;
+  z-index: 50;
+}
+
+.sidebar-heading {
+  padding: 0 16px 10px;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 6px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 16px;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  color: var(--muted);
+  font-size: 12.5px;
+  transition: all 0.18s;
+}
+.nav-item:hover { background: #EDF4F7; color: var(--text); }
+.nav-item.active {
+  border-left-color: var(--primary);
+  background: #E4F0F5;
+  color: var(--primary-dark);
+  font-weight: 600;
+}
+
+.nav-num {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--border);
+  color: var(--muted);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700;
+  flex-shrink: 0;
+  transition: all 0.18s;
+}
+.nav-item.active .nav-num { background: var(--primary); color: white; }
+
+/* ===== Main content ===== */
+.main {
+  margin-left: var(--sidebar);
+  flex: 1;
+  padding: 24px 28px 40px;
+  max-width: calc(var(--sidebar) + 860px);
+}
+
+/* ===== Form sections ===== */
+.form-section {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 22px;
+  overflow: hidden;
+}
+
+.section-header {
+  background: var(--primary);
+  color: white;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.section-header.warm { background: var(--warm); }
+
+.section-num {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.22);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700;
+  flex-shrink: 0;
+}
+.section-title    { font-size: 15px; font-weight: 600; }
+.section-subtitle { font-size: 11.5px; opacity: 0.78; margin-top: 1px; }
+
+.section-body { padding: 20px; }
+
+/* ===== Field layout ===== */
+.field-group { margin-bottom: 14px; }
+.field-row { display: grid; gap: 14px; grid-template-columns: 1fr 1fr; }
+.field-row.col-3 { grid-template-columns: 1fr 1fr 1fr; }
+.field-row.col-3-1 { grid-template-columns: 3fr 1fr; align-items: start; }
+
+label.field-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 5px;
+  line-height: 1.4;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="date"],
+input[type="tel"],
+textarea {
+  width: 100%;
+  padding: 8px 11px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 13.5px;
+  font-family: inherit;
+  color: var(--text);
+  background: white;
+  transition: border-color 0.18s, box-shadow 0.18s;
+  resize: vertical;
+}
+input:focus, textarea:focus {
+  outline: none;
+  border-color: var(--primary-light);
+  box-shadow: 0 0 0 3px rgba(127,181,181,0.2);
+}
+
+textarea         { min-height: 76px; }
+textarea.medium  { min-height: 100px; }
+textarea.tall    { min-height: 130px; }
+textarea.notes   { min-height: 200px; }
+
+.divider { height: 1px; background: var(--border); margin: 18px 0; }
+
+/* ===== Note buttons 1-5 ===== */
+.note-group { display: flex; flex-direction: column; }
+.note-label {
+  font-size: 12px; font-weight: 600;
+  color: var(--muted); margin-bottom: 5px;
+}
+.note-label small { font-weight: 400; font-size: 10.5px; display: block; margin-top: 1px; }
+
+.note-buttons {
+  display: flex;
+  gap: 5px;
+  margin-top: 2px;
+}
+.note-btn {
+  flex: 1;
+  padding: 7px 4px;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  font-family: inherit;
+  transition: all 0.15s;
+  text-align: center;
+}
+.note-btn:hover    { border-color: var(--primary-light); color: var(--primary); }
+.note-btn.selected { background: var(--primary); border-color: var(--primary); color: white; }
+
+/* ===== Scale buttons 0-10 ===== */
+.scale-wrap { display: flex; flex-direction: column; }
+.scale-label {
+  font-size: 12px; font-weight: 600;
+  color: var(--muted); margin-bottom: 6px;
+}
+.scale-buttons {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.scale-btn {
+  width: 36px; height: 36px;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--muted);
+  font-family: inherit;
+  transition: all 0.15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.scale-btn:hover    { border-color: var(--primary-light); color: var(--primary); }
+.scale-btn.selected { background: var(--primary); border-color: var(--primary); color: white; }
+.scale-hint {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+/* ===== Checkboxes ===== */
+.checkbox-group {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+}
+.checkbox-group input[type="checkbox"] {
+  width: 16px; height: 16px;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+
+/* ===== Accordion (section 5) ===== */
+.accordion-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  cursor: pointer;
+  background: #FFF8F0;
+  border-bottom: 1px solid #EDD8B8;
+  user-select: none;
+  transition: background 0.18s;
+}
+.accordion-trigger:hover { background: #FFF0DC; }
+
+.accordion-trigger-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  color: var(--warm);
+  font-size: 13.5px;
+}
+.badge {
+  font-size: 10.5px;
+  background: var(--warm-light);
+  color: white;
+  padding: 2px 9px;
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+.accordion-arrow {
+  font-size: 14px;
+  color: var(--warm);
+  transition: transform 0.28s;
+}
+.accordion-arrow.open { transform: rotate(180deg); }
+
+.accordion-body {
+  display: none;
+  padding: 20px;
+  background: #FFFBF7;
+}
+.accordion-body.open { display: block; }
+
+.notice {
+  background: #FFF0DC;
+  border-left: 4px solid var(--warm-light);
+  padding: 10px 14px;
+  border-radius: 4px;
+  font-size: 12.5px;
+  color: #7A5000;
+  margin-bottom: 16px;
+  font-style: italic;
+}
+
+/* ===== Footer ===== */
+.form-footer {
+  text-align: center;
+  padding: 20px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* ===== Toast ===== */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--primary-dark);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s;
+  z-index: 9999;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+
+/* ===== Print styles ===== */
+@media print {
+  .app-header, .sidebar, .progress-bar, .header-actions, .accordion-trigger { display: none !important; }
+
+  .app-body { margin-top: 0; }
+  .main { margin-left: 0; padding: 0; max-width: 100%; }
+
+  .form-section {
+    box-shadow: none;
+    border: 1px solid #bbb;
+    page-break-inside: avoid;
+    margin-bottom: 14px;
+  }
+
+  .section-header {
+    background: #4A7C8E !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .section-header.warm {
+    background: #7A5C3E !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .accordion-body { display: block !important; background: white; }
+
+  .note-btn.selected, .scale-btn.selected {
+    background: #4A7C8E !important;
+    color: white !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  input[type="text"], input[type="email"], input[type="date"], input[type="tel"], textarea {
+    border: none;
+    border-bottom: 1px solid #bbb;
+    border-radius: 0;
+  }
+
+  body { font-size: 11px; }
+  .form-footer { display: none; }
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 800px) {
+  :root { --sidebar: 0px; }
+  .sidebar { display: none; }
+  .progress-bar { left: 0; }
+  .field-row, .field-row.col-3, .field-row.col-3-1 { grid-template-columns: 1fr; }
+  .main { padding: 16px; }
+  .app-header h1 { font-size: 14px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== Header ===== -->
+<header class="app-header">
+  <div class="header-brand">
+    <h1>Fiche Patient — Sophrologie</h1>
+    <p>Questionnaire d'anamnèse</p>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-ghost" onclick="resetForm()">&#8635; Nouvelle fiche</button>
+    <button class="btn btn-ghost" onclick="importJSON()">&#8593; Ouvrir JSON</button>
+    <button class="btn btn-green" onclick="exportJSON()">&#8595; Export JSON</button>
+    <button class="btn btn-teal" onclick="exportPDF()">&#128438; Imprimer / PDF</button>
+    <input type="file" id="importInput" accept=".json" style="display:none" onchange="loadJSON(this)">
+  </div>
+</header>
+
+<!-- ===== Progress ===== -->
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<!-- ===== Toast ===== -->
+<div class="toast" id="toast"></div>
+
+<!-- ===== App body ===== -->
+<div class="app-body">
+
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="sidebar-heading">Navigation</div>
+    <div class="nav-item active" onclick="scrollToSection('s1')"><span class="nav-num">1</span>Informations générales</div>
+    <div class="nav-item" onclick="scrollToSection('s2')"><span class="nav-num">2</span>Motif de consultation</div>
+    <div class="nav-item" onclick="scrollToSection('s3')"><span class="nav-num">3</span>Objectifs</div>
+    <div class="nav-item" onclick="scrollToSection('s4')"><span class="nav-num">4</span>État de santé</div>
+    <div class="nav-item" onclick="scrollToSection('s5')"><span class="nav-num">5</span>Stress &amp; traumatisme</div>
+    <div class="nav-item" onclick="scrollToSection('s6')"><span class="nav-num">6</span>Situation personnelle</div>
+    <div class="nav-item" onclick="scrollToSection('s7')"><span class="nav-num">7</span>Hygiène de vie</div>
+    <div class="nav-item" onclick="scrollToSection('s8')"><span class="nav-num">8</span>Ressources personnelles</div>
+    <div class="nav-item" onclick="scrollToSection('s9')"><span class="nav-num">9</span>Cadre de l'accompagnement</div>
+    <div class="nav-item" onclick="scrollToSection('s10')"><span class="nav-num">10</span>Notes libres</div>
+  </nav>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- ======================================================= -->
+    <!-- SECTION 1 — Informations générales                      -->
+    <!-- ======================================================= -->
+    <section class="form-section" id="s1">
+      <div class="section-header">
+        <div class="section-num">1</div>
+        <div>
+          <div class="section-title">Informations générales</div>
+          <div class="section-subtitle">Identité et situation du patient</div>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label" for="nom">Nom</label>
+            <input type="text" id="nom" placeholder="Nom de famille">
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="prenom">Prénom</label>
+            <input type="text" id="prenom" placeholder="Prénom">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label" for="ddn">Date de naissance / Âge</label>
+            <input type="text" id="ddn" placeholder="JJ/MM/AAAA ou âge">
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="dateSeance">Date de la séance</label>
+            <input type="date" id="dateSeance">
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="adresse">Adresse</label>
+          <input type="text" id="adresse" placeholder="Adresse complète">
+        </div>
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label" for="telephone">Téléphone / Portable</label>
+            <input type="tel" id="telephone" placeholder="06 XX XX XX XX">
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="email">Email</label>
+            <input type="email" id="email" placeholder="email@exemple.fr">
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="profession">Profession / Situation actuelle</label>
+          <input type="text" id="profession" placeholder="Emploi, étudiant(e), retraité(e)...">
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="field-row col-3-1">
+          <div class="field-group">
+            <label class="field-label" for="situationFamiliale">Situation familiale (type, qualité de la relation)</label>
+            <textarea id="situationFamiliale" placeholder="Célibataire, en couple, marié(e)… Qualité de la relation..."></textarea>
+          </div>
+          <div class="note-group">
+            <div class="note-label">Note<small>Qualité relation</small></div>
+            <div class="note-buttons">
+              <button class="note-btn" data-val="1" data-target="noteSituationFamiliale" onclick="selectNote(this)">1</button>
+              <button class="note-btn" data-val="2" data-target="noteSituationFamiliale" onclick="selectNote(this)">2</button>
+              <button class="note-btn" data-val="3" data-target="noteSituationFamiliale" onclick="selectNote(this)">3</button>
+              <button class="note-btn" data-val="4" data-target="noteSituationFamiliale" onclick="selectNote(this)">4</button>
+              <button class="note-btn" data-val="5" data-target="noteSituationFamiliale" onclick="selectNote(this)">5</button>
+            </div>
+            <input type="hidden" id="noteSituationFamiliale">
+          </div>
+        </div>
+
+        <div class="field-row col-3-1">
+          <div class="field-group">
+            <label class="field-label" for="enfants">Enfants (nombre, sexe, âge, qualité de la relation)</label>
+            <textarea id="enfants" placeholder="Ex. : 2 enfants, fille 8 ans, garçon 12 ans…"></textarea>
+          </div>
+          <div class="note-group">
+            <div class="note-label">Note<small>Relation enfants</small></div>
+            <div class="note-buttons">
+              <button class="note-btn" data-val="1" data-target="noteEnfants" onclick="selectNote(this)">1</button>
+              <button class="note-btn" data-val="2" data-target="noteEnfants" onclick="selectNote(this)">2</button>
+              <button class="note-btn" data-val="3" data-target="noteEnfants" onclick="selectNote(this)">3</button>
+              <button class="note-btn" data-val="4" data-target="noteEnfants" onclick="selectNote(this)">4</button>
+              <button class="note-btn" data-val="5" data-target="noteEnfants" onclick="selectNote(this)">5</button>
+            </div>
+            <input type="hidden" id="noteEnfants">
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="quotidien">Quotidien hors travail</label>
+          <textarea id="quotidien" placeholder="Activités, routine, vie à la maison..."></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================= -->
+    <!-- SECTION 2 — Motif de consultation                       -->
+    <!-- ======================================================= -->
+    <section class="form-section" id="s2">
+      <div class="section-header">
+        <div class="section-num">2</div>
+        <div>
+          <div class="section-title">Motif de consultation</div>
+          <div class="section-subtitle">Raison de la démarche et historique</div>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="field-group">
+          <label class="field-label" for="motifPrincipal">Objet / motif principal de la visite</label>
+          <textarea class="tall" id="motifPrincipal" placeholder="Décrivez en quelques mots ce qui vous amène..."></textarea>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="orientation">Qui vous a orienté vers moi ?</label>
+          <input type="text" id="orientation" placeholder="Médecin, ami(e), internet, bouche à oreille...">
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="depuisQuand">Depuis quand ressentez-vous cette difficulté ?</label>
+          <input type="text" id="depuisQuand" placeholder="Ex. : depuis 6 mois, depuis un an, depuis l'enfance...">
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="situations">Dans quelles situations cela se manifeste-t-il le plus ?</label>
+          <textarea id="situations" placeholder="Contextes, lieux, moments de la journée..."></textarea>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="dejaEssaye">Qu'avez-vous déjà essayé pour améliorer la situation ?</label>
+          <textarea id="dejaEssaye" placeholder="Médecine, psychologie, sport, méditation, autres thérapies..."></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================= -->
+    <!-- SECTION 3 — Objectifs                                   -->
+    <!-- ======================================================= -->
+    <section class="form-section" id="s3">
+      <div class="section-header">
+        <div class="section-num">3</div>
+        <div>
+          <div class="section-title">Objectifs de l'accompagnement</div>
+          <div class="section-subtitle">Ce que le patient souhaite obtenir</div>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="field-group">
+          <label class="field-label" for="objectifSophro">Qu'aimeriez-vous obtenir grâce à la sophrologie ?</label>
+          <textarea id="objectifSophro" placeholder="Amélioration du sommeil, gestion du stress, confiance en soi..."></textarea>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="objectifSMART">Objectif SMART &mdash; <em style="font-weight:400">Spécifique · Mesurable · Atteignable · Réaliste · Temporel</em></label>
+          <textarea class="medium" id="objectifSMART" placeholder="Formulez votre objectif de façon précise, mesurable, avec un délai défini..."></textarea>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="ressentiObjectif">Comment vous sentirez-vous une fois l'objectif atteint ? Qu'est-ce qui sera différent dans votre quotidien ?</label>
+          <textarea id="ressentiObjectif" placeholder="Émotions, comportements, changements attendus..."></textarea>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="projetFutur">Comment vous voyez-vous dans le futur, une fois cet objectif accompli ?</label>
+          <textarea id="projetFutur" placeholder="Vision positive du futur, projection..."></textarea>
+        </div>
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label" for="delaiObjectif">En combien de temps souhaitez-vous atteindre cet objectif ?</label>
+            <input type="text" id="delaiObjectif" placeholder="Ex. : 3 mois, 6 séances...">
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="indicateurs">Comment saurez-vous que l'accompagnement vous a aidé ? (indicateurs de réussite)</label>
+            <textarea id="indicateurs" placeholder="Signes concrets de réussite..."></textarea>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="field-row">
+          <div class="scale-wrap">
+            <div class="scale-label">État actuel (0 = très difficile &mdash; 10 = parfait)</div>
+            <div class="scale-buttons" id="scaleActuel"></div>
+            <div class="scale-hint"><span>Très difficile</span><span>Parfait</span></div>
+            <input type="hidden" id="etatActuel">
+          </div>
+          <div class="scale-wrap">
+            <div class="scale-label">Où souhaitez-vous être en fin d'accompagnement ? (0–10)</div>
+            <div class="scale-buttons" id="scaleObjectif"></div>
+            <div class="scale-hint"><span>0</span><span>10</span></div>
+            <input type="hidden" id="etatObjectif">
+          </div>
+        </div>
+
+        <div class="field-group" style="margin-top:14px;">
+          <label class="field-label" for="ressourcesSituationnelles">Ressources situationnelles</label>
+          <textarea id="ressourcesSituationnelles" placeholder="Ce qui aide déjà dans la situation actuelle, points d'appui..."></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================= -->
+    <!-- SECTION 4 — État de santé général                       -->
+    <!-- ======================================================= -->
+    <section class="form-section" id="s4">
+      <div class="section-header">
+        <div class="section-num">4</div>
+        <div>
+          <div class="section-title">État de santé général</div>
+          <div class="section-subtitle">Santé physique, traitements, symptômes</div>
+        </div>
+      </div>
+      <div class="section-body">
+
+        <div class="field-row col-3-1">
+          <div class="field-group">
+            <label class="field-label" for="santeGenerale">État de santé général (symptômes, motif de consultation)</label>
+            <textarea id="santeGenerale" placeholder="Antécédents médicaux, état général, pathologies..."></textarea>
+          </div>
+          <div class="note-group">
+            <div class="note-label">Note (1–5)</div>
+            <div class="note-buttons">
+              <button class="note-btn" data-val="1" data-target="noteSanteGenerale" onclick="selectNote(this)">1</button>
+              <button class="note-btn" data-val="2" data-target="noteSanteGenerale" onclick="selectNote(this)">2</button>
+              <button class="note-btn" data-val="3" data-target="noteSanteGenerale" onclick="selectNote(this)">3</button>
+              <button class="note-btn" data-val="4" data-target="noteSanteGenerale" onclick="selectNote(this)">4</button>
+              <button class="note-btn" data-val="5" data-target="noteSanteGenerale" onclick="selectNote(this)">5</button>
+            </div>
+            <input type="hidden" id="noteSanteGenerale">
+          </div>
+        </div>
+
+        <div class="field-row col-3-1">
+          <div class="field-group">
+            <label class="field-label" for="traitement">Traitement médical particulier</label>
+            <textarea id="traitement" placeholder="Médicaments, posologie, durée..."></textarea>
+          </div>
+          <div class="note-group">
+            <div class="note-label">Note (1–5)</div>
+            <div class="note-buttons">
+              <button class="note-btn" data-val="1" data-target="noteTraitement" onclick="selectNote(this)">1</button>
+              <button class="note-btn" data-val="2" data-target="noteTraitement" onclick="selectNote(this)">2</button>
+              <button class="note-btn" data-val="3" data-target="noteTraitement" onclick="selectNote(this)">3</button>
+              <button class="note-btn" data-val="4" data-target="noteTraitement" onclick="selectNote(this)">4</button>
+              <button class="note-btn" data-val="5" data-target="noteTraitement" onclick="selectNote(this)">5</button>
+            </div>
+            <input type="hidden" id="noteTraitement">
+          </div>
+        </div>
+
+        <div class="field-row col-3-1">
+          <div class="field-group">
+            <label class="field-label" for="douleurs">Douleurs spécifiques (type, localisation, durée)</label>
+            <textarea id="douleurs" placeholder="Maux de tête, douleurs dorsales, tensions musculaires..."></textarea>
+          </div>
+          <div class="note-group">
+            <div class="note-label">Note (1–5)</div>
+            <div class="note-buttons">
+              <button class="note-btn" data-val="1" data-target="noteDouleurs" onclick="selectNote(this)">1</button>
+              <button class="note-btn" data-val="2" data-target="noteDouleurs" onclick="selectNote(this)">2</button>
+              <button class="note-btn" data-val="3" data-target="noteDouleurs" onclick="selectNote(this)">3</button>
+              <button class="note-btn" data-val="4" data-target="noteDouleurs" onclick="selectNote(this)">4</button>
+              <button class="note-btn" data-val="5" data-target="noteDouleurs" onclick="selectNote(this)">5</button>
+            </div>
+            <input type="hidden" id="noteDouleurs">
+          </div>
+        </div>
+
+        <div class="field-row col-3-1">
+          <div class="field-group">
+            <label class="field-label" for="sommeil">Troubles du sommeil (fréquence, durée, traitement)</label>
+            <textarea id="sommeil" placeholder="Insomnie, réveils nocturnes, difficulté à s'endormir..."></textarea>
+          </div>
+          <div class="note-group">
+            <div class="note-label">Note (1–5)</div>
+            <div class="note-buttons">
+              <button class="note-btn" data-val="1" data-target="noteSommeil" onclick="selectNote(this)">1</button>
+              <button class="note-btn" data-val="2" data-target="noteSommeil" onclick="selectNote(this)">2</button>
+              <button class="note-btn" data-val="3" data-target="noteSommeil" onclick="selectNote(this)">3</button>
+              <button class="note-btn" data-val="4" data-target="noteSommeil" onclick="selectNote(this)">4</button>
+              <button class="note-btn" data-val="5" data-target="noteSommeil" onclick="selectNote(this)">5</button>
+            </div>
+            <input type="hidden" id="noteSommeil">
+          </div>
+        </div>
+
+        <div class="field-row col-3-1">
+          <div class="field-group">
+            <label class="field-label" for="alimentationTroubles">Troubles de l'alimentation (fréquence, durée, traitement)</label>
+            <textarea id="alimentationTroubles" placeholder="Compulsions, restrictions, troubles du comportement alimentaire..."></textarea>
+          </div>
+          <div class="note-group">
+            <div class="note-label">Note (1–5)</div>
+            <div class="note-buttons">
+              <button class="note-btn" data-val="1" data-target="noteAlimentationTroubles" onclick="selectNote(this)">1</button>
+              <button class="note-btn" data-val="2" data-target="noteAlimentationTroubles" onclick="selectNote(this)">2</button>
+              <button class="note-btn" data-val="3" data-target="noteAlimentationTroubles" onclick="selectNote(this)">3</button>
+              <button class="note-btn" data-val="4" data-target="noteAlimentationTroubles" onclick="selectNote(this)">4</button>
+              <button class="note-btn" data-val="5" data-target="noteAlimentationTroubles" onclick="selectNote(this)">5</button>
+            </div>
+            <input type="hidden" id="noteAlimentationTroubles">
+          </div>
+        </div>
+
+        <div class="field-row col-3-1">
+          <div class="field-group">
+            <label class="field-label" for="stressEmotions">Stress et émotions (niveau, émotions dominantes, situations de tension)</label>
+            <textarea id="stressEmotions" placeholder="Anxiété, colère, tristesse, émotions récurrentes..."></textarea>
+          </div>
+          <div class="note-group">
+            <div class="note-label">Note (1–5)</div>
+            <div class="note-buttons">
+              <button class="note-btn" data-val="1" data-target="noteStressEmotions" onclick="selectNote(this)">1</button>
+              <button class="note-btn" data-val="2" data-target="noteStressEmotions" onclick="selectNote(this)">2</button>
+              <button class="note-btn" data-val="3" data-target="noteStressEmotions" onclick="selectNote(this)">3</button>
+              <button class="note-btn" data-val="4" data-target="noteStressEmotions" onclick="selectNote(this)">4</button>
+              <button class="note-btn" data-val="5" data-target="noteStressEmotions" onclick="selectNote(this)">5</button>
+            </div>
+            <input type="hidden" id="noteStressEmotions">
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======================================================= -->
+    <!-- SECTION 5 — Stress intense & traumatisme (accordéon)    -->
+    <!-- ======================================================= -->
+    <section class="form-section" id="s5">
+      <div class="section-header warm">
+        <div class="section-num">5</div>
+        <div>
+          <div class="section-title">Stress intense &amp; vécu traumatique</div>
+          <div class="section-subtitle">Section optionnelle — à compléter selon le contexte</div>
+        </div>
+      </div>
+      <div class="accordion-trigger" onclick="toggleAccordion()">
+        <div class="accordion-trigger-left">
+          <span>&#128274;</span>
+          <span>Cliquez pour déployer cette section confidentielle</span>
+          <span class="badge">Optionnel</span>
+        </div>
+        <span class="accordion-arrow" id="accordionArrow">&#9660;</span>
+      </div>
+      <div class="accordion-body" id="accordionBody">
+        <div class="notice">
+          Rappel&nbsp;: la sophrologie ne remplace pas un suivi médical ou psychothérapeutique nécessaire.
+          Ces informations sont strictement confidentielles.
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="evenementDifficile">Avez-vous vécu un événement difficile ou choquant, récemment ou dans le passé&nbsp;?</label>
+          <textarea class="medium" id="evenementDifficile" placeholder="Décrivez si vous le souhaitez, sans obligation de détail..."></textarea>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="symptomesTrauma">Présence actuelle d'anxiété, souvenirs envahissants, cauchemars, évitement, hypervigilance&nbsp;?</label>
+          <textarea id="symptomesTrauma" placeholder="Fréquence, intensité, impact sur le quotidien..."></textarea>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="accompagnementParallele">Accompagnement médical ou psychologique en parallèle&nbsp;?</label>
+          <input type="text" id="accompagnementParallele" placeholder="Nom du praticien, type de suivi...">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Souhaitez-vous un travail axé sur&nbsp;:</label>
+          <div class="checkbox-group">
+            <label><input type="checkbox" id="focusApaisement"> Apaisement</label>
+            <label><input type="checkbox" id="focusSecurite"> Sécurité intérieure</label>
+            <label><input type="checkbox" id="focusConfiance"> Confiance</label>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================= -->
+    <!-- SECTION 6 — Situation personnelle & sociale             -->
+    <!-- ======================================================= -->
+    <section class="form-section" id="s6">
+      <div class="section-header">
+        <div class="section-num">6</div>
+        <div>
+          <div class="section-title">Situation personnelle &amp; sociale</div>
+          <div class="section-subtitle">Contexte professionnel, social et relationnel</div>
+        </div>
+      </div>
+      <div class="section-body">
+
+        <div class="field-row col-3-1">
+          <div class="field-group">
+            <label class="field-label" for="situationPro">Situation professionnelle (type, qualité, stress)</label>
+            <textarea id="situationPro" placeholder="Nature du poste, ambiance, charge de travail..."></textarea>
+          </div>
+          <div class="note-group">
+            <div class="note-label">Note (1–5)</div>
+            <div class="note-buttons">
+              <button class="note-btn" data-val="1" data-target="noteSituationPro" onclick="selectNote(this)">1</button>
+              <button class="note-btn" data-val="2" data-target="noteSituationPro" onclick="selectNote(this)">2</button>
+              <button class="note-btn" data-val="3" data-target="noteSituationPro" onclick="selectNote(this)">3</button>
+              <button class="note-btn" data-val="4" data-target="noteSituationPro" onclick="selectNote(this)">4</button>
+              <button class="note-btn" data-val="5" data-target="noteSituationPro" onclick="selectNote(this)">5</button>
+            </div>
+            <input type="hidden" id="noteSituationPro">
+          </div>
+        </div>
+
+        <div class="field-row col-3-1">
+          <div class="field-group">
+            <label class="field-label" for="situationSociale">Situation sociale (type, qualité, stress)</label>
+            <textarea id="situationSociale" placeholder="Environnement social, vie de quartier, réseau..."></textarea>
+          </div>
+          <div class="note-group">
+            <div class="note-label">Note (1–5)</div>
+            <div class="note-buttons">
+              <button class="note-btn" data-val="1" data-target="noteSituationSociale" onclick="selectNote(this)">1</button>
+              <button class="note-btn" data-val="2" data-target="noteSituationSociale" onclick="selectNote(this)">2</button>
+              <button class="note-btn" data-val="3" data-target="noteSituationSociale" onclick="selectNote(this)">3</button>
+              <button class="note-btn" data-val="4" data-target="noteSituationSociale" onclick="selectNote(this)">4</button>
+              <button class="note-btn" data-val="5" data-target="noteSituationSociale" onclick="selectNote(this)">5</button>
+            </div>
+            <input type="hidden" id="noteSituationSociale">
+          </div>
+        </div>
+
+        <div class="field-row col-3-1">
+          <div class="field-group">
+            <label class="field-label" for="vieAmicale">Vie amicale (qualité, fréquence des contacts, soutien ressenti)</label>
+            <textarea id="vieAmicale" placeholder="Cercle d'amis, fréquence des contacts, qualité du soutien..."></textarea>
+          </div>
+          <div class="note-group">
+            <div class="note-label">Note (1–5)</div>
+            <div class="note-buttons">
+              <button class="note-btn" data-val="1" data-target="noteVieAmicale" onclick="selectNote(this)">1</button>
+              <button class="note-btn" data-val="2" data-target="noteVieAmicale" onclick="selectNote(this)">2</button>
+              <button class="note-btn" data-val="3" data-target="noteVieAmicale" onclick="selectNote(this)">3</button>
+              <button class="note-btn" data-val="4" data-target="noteVieAmicale" onclick="selectNote(this)">4</button>
+              <button class="note-btn" data-val="5" data-target="noteVieAmicale" onclick="selectNote(this)">5</button>
+            </div>
+            <input type="hidden" id="noteVieAmicale">
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="aversions">Aversions&nbsp;: quelles choses, situations ou animaux vous font peur ou que vous n'aimez pas&nbsp;?</label>
+          <textarea id="aversions" placeholder="Phobies, aversions, déclencheurs d'inconfort..."></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================= -->
+    <!-- SECTION 7 — Hygiène de vie & loisirs                   -->
+    <!-- ======================================================= -->
+    <section class="form-section" id="s7">
+      <div class="section-header">
+        <div class="section-num">7</div>
+        <div>
+          <div class="section-title">Hygiène de vie &amp; loisirs</div>
+          <div class="section-subtitle">Habitudes, activités et temps de récupération</div>
+        </div>
+      </div>
+      <div class="section-body">
+
+        <div class="field-row col-3-1">
+          <div class="field-group">
+            <label class="field-label" for="activitePhysique">Activité physique</label>
+            <textarea id="activitePhysique" placeholder="Type, fréquence, durée, intensité..."></textarea>
+          </div>
+          <div class="note-group">
+            <div class="note-label">Note (1–5)</div>
+            <div class="note-buttons">
+              <button class="note-btn" data-val="1" data-target="noteActivitePhysique" onclick="selectNote(this)">1</button>
+              <button class="note-btn" data-val="2" data-target="noteActivitePhysique" onclick="selectNote(this)">2</button>
+              <button class="note-btn" data-val="3" data-target="noteActivitePhysique" onclick="selectNote(this)">3</button>
+              <button class="note-btn" data-val="4" data-target="noteActivitePhysique" onclick="selectNote(this)">4</button>
+              <button class="note-btn" data-val="5" data-target="noteActivitePhysique" onclick="selectNote(this)">5</button>
+            </div>
+            <input type="hidden" id="noteActivitePhysique">
+          </div>
+        </div>
+
+        <div class="field-row col-3-1">
+          <div class="field-group">
+            <label class="field-label" for="consommation">Alimentation / consommation (tabac, alcool, café)</label>
+            <textarea id="consommation" placeholder="Alimentation équilibrée ou non, consommations régulières..."></textarea>
+          </div>
+          <div class="note-group">
+            <div class="note-label">Note (1–5)</div>
+            <div class="note-buttons">
+              <button class="note-btn" data-val="1" data-target="noteConsommation" onclick="selectNote(this)">1</button>
+              <button class="note-btn" data-val="2" data-target="noteConsommation" onclick="selectNote(this)">2</button>
+              <button class="note-btn" data-val="3" data-target="noteConsommation" onclick="selectNote(this)">3</button>
+              <button class="note-btn" data-val="4" data-target="noteConsommation" onclick="selectNote(this)">4</button>
+              <button class="note-btn" data-val="5" data-target="noteConsommation" onclick="selectNote(this)">5</button>
+            </div>
+            <input type="hidden" id="noteConsommation">
+          </div>
+        </div>
+
+        <div class="field-row col-3-1">
+          <div class="field-group">
+            <label class="field-label" for="loisirs">Loisirs (type, qualité, fréquence, durée, lieux)</label>
+            <textarea id="loisirs" placeholder="Activités de loisirs, culture, nature, sport..."></textarea>
+          </div>
+          <div class="note-group">
+            <div class="note-label">Note (1–5)</div>
+            <div class="note-buttons">
+              <button class="note-btn" data-val="1" data-target="noteLoisirs" onclick="selectNote(this)">1</button>
+              <button class="note-btn" data-val="2" data-target="noteLoisirs" onclick="selectNote(this)">2</button>
+              <button class="note-btn" data-val="3" data-target="noteLoisirs" onclick="selectNote(this)">3</button>
+              <button class="note-btn" data-val="4" data-target="noteLoisirs" onclick="selectNote(this)">4</button>
+              <button class="note-btn" data-val="5" data-target="noteLoisirs" onclick="selectNote(this)">5</button>
+            </div>
+            <input type="hidden" id="noteLoisirs">
+          </div>
+        </div>
+
+        <div class="field-row col-3-1">
+          <div class="field-group">
+            <label class="field-label" for="objetsLieux">Objets / lieux privilégiés</label>
+            <textarea id="objetsLieux" placeholder="Endroits préférés, objets significatifs..."></textarea>
+          </div>
+          <div class="note-group">
+            <div class="note-label">Note (1–5)</div>
+            <div class="note-buttons">
+              <button class="note-btn" data-val="1" data-target="noteObjetsLieux" onclick="selectNote(this)">1</button>
+              <button class="note-btn" data-val="2" data-target="noteObjetsLieux" onclick="selectNote(this)">2</button>
+              <button class="note-btn" data-val="3" data-target="noteObjetsLieux" onclick="selectNote(this)">3</button>
+              <button class="note-btn" data-val="4" data-target="noteObjetsLieux" onclick="selectNote(this)">4</button>
+              <button class="note-btn" data-val="5" data-target="noteObjetsLieux" onclick="selectNote(this)">5</button>
+            </div>
+            <input type="hidden" id="noteObjetsLieux">
+          </div>
+        </div>
+
+        <div class="field-row col-3-1">
+          <div class="field-group">
+            <label class="field-label" for="tempsDetente">Temps de détente et récupération</label>
+            <textarea id="tempsDetente" placeholder="Moments de repos, qualité de la récupération..."></textarea>
+          </div>
+          <div class="note-group">
+            <div class="note-label">Note (1–5)</div>
+            <div class="note-buttons">
+              <button class="note-btn" data-val="1" data-target="noteTempsDetente" onclick="selectNote(this)">1</button>
+              <button class="note-btn" data-val="2" data-target="noteTempsDetente" onclick="selectNote(this)">2</button>
+              <button class="note-btn" data-val="3" data-target="noteTempsDetente" onclick="selectNote(this)">3</button>
+              <button class="note-btn" data-val="4" data-target="noteTempsDetente" onclick="selectNote(this)">4</button>
+              <button class="note-btn" data-val="5" data-target="noteTempsDetente" onclick="selectNote(this)">5</button>
+            </div>
+            <input type="hidden" id="noteTempsDetente">
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======================================================= -->
+    <!-- SECTION 8 — Ressources personnelles                     -->
+    <!-- ======================================================= -->
+    <section class="form-section" id="s8">
+      <div class="section-header">
+        <div class="section-num">8</div>
+        <div>
+          <div class="section-title">Ressources personnelles</div>
+          <div class="section-subtitle">Forces, soutiens et ancres positives</div>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="field-group">
+          <label class="field-label" for="bienfaits">Ce qui vous fait du bien, vos qualités, vos soutiens</label>
+          <textarea class="medium" id="bienfaits" placeholder="Qualités personnelles, personnes de confiance, éléments ressource..."></textarea>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="activitesRelaxantes">Activités relaxantes</label>
+          <textarea id="activitesRelaxantes" placeholder="Ce qui vous détend naturellement..."></textarea>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="chosesAffection">Quelles sont les choses que vous affectionnez particulièrement&nbsp;?</label>
+          <textarea id="chosesAffection" placeholder="Passions, centres d'intérêt, ce qui vous anime..."></textarea>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="lieuxObjets">Quels sont les lieux ou objets que vous aimez&nbsp;? Qu'est-ce que cela évoque pour vous&nbsp;?</label>
+          <textarea id="lieuxObjets" placeholder="Lieux symboliques, objets précieux, émotions associées..."></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================= -->
+    <!-- SECTION 9 — Cadre de l'accompagnement                   -->
+    <!-- ======================================================= -->
+    <section class="form-section" id="s9">
+      <div class="section-header">
+        <div class="section-num">9</div>
+        <div>
+          <div class="section-title">Cadre de l'accompagnement</div>
+          <div class="section-subtitle">Organisation et engagement du patient</div>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label" for="frequenceSeances">Fréquence et nombre de séances envisagés</label>
+            <input type="text" id="frequenceSeances" placeholder="Ex. : 1 séance / semaine pendant 2 mois...">
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="engagementPratique">Engagement de pratique personnelle entre les séances</label>
+            <textarea id="engagementPratique" placeholder="Exercices à domicile, temps disponible, motivation..."></textarea>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================= -->
+    <!-- SECTION 10 — Notes libres                               -->
+    <!-- ======================================================= -->
+    <section class="form-section" id="s10">
+      <div class="section-header">
+        <div class="section-num">10</div>
+        <div>
+          <div class="section-title">Notes libres</div>
+          <div class="section-subtitle">Observations du praticien</div>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="field-group">
+          <label class="field-label" for="notesLibres">Observations, impressions, points à explorer</label>
+          <textarea class="notes" id="notesLibres" placeholder="Espace libre : observations cliniques, éléments non verbaux, hypothèses de travail, points à approfondir..."></textarea>
+        </div>
+      </div>
+    </section>
+
+    <div class="form-footer">
+      Fiche patient &mdash; Sophrologie &nbsp;·&nbsp; Confidentiel</span>
+    </div>
+
+  </main>
+</div>
+
+<!-- ===================================================== -->
+<!-- JavaScript                                            -->
+<!-- ===================================================== -->
+<script>
+'use strict';
+
+// ── Init ──────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  const today = new Date();
+  document.getElementById('dateSeance').value = today.toISOString().split('T')[0];
+  document.getElementById('dateGen').textContent = today.toLocaleDateString('fr-FR', {
+    day: '2-digit', month: 'long', year: 'numeric'
+  });
+
+  buildScaleGroup('scaleActuel',  'etatActuel');
+  buildScaleGroup('scaleObjectif','etatObjectif');
+  setupScrollspy();
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  updateProgress();
+});
+
+// ── Scale buttons 0–10 ────────────────────────────────────
+function buildScaleGroup(containerId, hiddenId) {
+  const container = document.getElementById(containerId);
+  for (let i = 0; i <= 10; i++) {
+    const btn = document.createElement('button');
+    btn.type        = 'button';
+    btn.className   = 'scale-btn';
+    btn.textContent = i;
+    btn.dataset.val    = i;
+    btn.dataset.target = hiddenId;
+    btn.addEventListener('click', function () {
+      container.querySelectorAll('.scale-btn').forEach(b => b.classList.remove('selected'));
+      this.classList.add('selected');
+      document.getElementById(hiddenId).value = this.dataset.val;
+    });
+    container.appendChild(btn);
+  }
+}
+
+// ── Note buttons 1–5 ──────────────────────────────────────
+function selectNote(btn) {
+  const group = btn.closest('.note-buttons');
+  group.querySelectorAll('.note-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  const targetId = btn.dataset.target;
+  if (targetId) document.getElementById(targetId).value = btn.dataset.val;
+}
+
+// ── Accordion ─────────────────────────────────────────────
+function toggleAccordion() {
+  document.getElementById('accordionBody').classList.toggle('open');
+  document.getElementById('accordionArrow').classList.toggle('open');
+}
+
+// ── Navigation ────────────────────────────────────────────
+function scrollToSection(id) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function setupScrollspy() {
+  const sections = Array.from(document.querySelectorAll('.form-section'));
+  const navItems = Array.from(document.querySelectorAll('.nav-item'));
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const idx = sections.indexOf(entry.target);
+        navItems.forEach(n => n.classList.remove('active'));
+        if (idx >= 0) navItems[idx].classList.add('active');
+      }
+    });
+  }, { rootMargin: '-15% 0px -65% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+}
+
+// ── Progress bar ──────────────────────────────────────────
+function updateProgress() {
+  const scrolled = window.scrollY;
+  const total    = document.body.scrollHeight - window.innerHeight;
+  const pct      = total > 0 ? (scrolled / total) * 100 : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+}
+
+// ── Collect all form data ─────────────────────────────────
+function collectData() {
+  const v = id => (document.getElementById(id) || {}).value || '';
+  const c = id => { const el = document.getElementById(id); return el ? el.checked : false; };
+
+  return {
+    meta: {
+      generated: new Date().toISOString(),
+      version:   '1.0'
+    },
+    section1_informations_generales: {
+      nom:                      v('nom'),
+      prenom:                   v('prenom'),
+      date_naissance:           v('ddn'),
+      date_seance:              v('dateSeance'),
+      adresse:                  v('adresse'),
+      telephone:                v('telephone'),
+      email:                    v('email'),
+      profession:               v('profession'),
+      situation_familiale:      v('situationFamiliale'),
+      note_situation_familiale: v('noteSituationFamiliale'),
+      enfants:                  v('enfants'),
+      note_enfants:             v('noteEnfants'),
+      quotidien_hors_travail:   v('quotidien')
+    },
+    section2_motif_consultation: {
+      motif_principal: v('motifPrincipal'),
+      orientation:     v('orientation'),
+      depuis_quand:    v('depuisQuand'),
+      situations:      v('situations'),
+      deja_essaye:     v('dejaEssaye')
+    },
+    section3_objectifs: {
+      objectif_sophro:           v('objectifSophro'),
+      objectif_SMART:            v('objectifSMART'),
+      ressenti_objectif:         v('ressentiObjectif'),
+      projet_futur:              v('projetFutur'),
+      delai_objectif:            v('delaiObjectif'),
+      indicateurs_reussite:      v('indicateurs'),
+      etat_actuel_0_10:          v('etatActuel'),
+      etat_objectif_0_10:        v('etatObjectif'),
+      ressources_situationnelles: v('ressourcesSituationnelles')
+    },
+    section4_sante: {
+      sante_generale:           v('santeGenerale'),
+      note_sante_generale:      v('noteSanteGenerale'),
+      traitement:               v('traitement'),
+      note_traitement:          v('noteTraitement'),
+      douleurs:                 v('douleurs'),
+      note_douleurs:            v('noteDouleurs'),
+      sommeil:                  v('sommeil'),
+      note_sommeil:             v('noteSommeil'),
+      alimentation_troubles:    v('alimentationTroubles'),
+      note_alimentation:        v('noteAlimentationTroubles'),
+      stress_emotions:          v('stressEmotions'),
+      note_stress_emotions:     v('noteStressEmotions')
+    },
+    section5_stress_traumatique: {
+      evenement_difficile:       v('evenementDifficile'),
+      symptomes:                 v('symptomesTrauma'),
+      accompagnement_parallele:  v('accompagnementParallele'),
+      focus_apaisement:          c('focusApaisement'),
+      focus_securite_interieure: c('focusSecurite'),
+      focus_confiance:           c('focusConfiance')
+    },
+    section6_situation_personnelle: {
+      situation_professionnelle:  v('situationPro'),
+      note_situation_pro:         v('noteSituationPro'),
+      situation_sociale:          v('situationSociale'),
+      note_situation_sociale:     v('noteSituationSociale'),
+      vie_amicale:                v('vieAmicale'),
+      note_vie_amicale:           v('noteVieAmicale'),
+      aversions:                  v('aversions')
+    },
+    section7_hygiene_vie: {
+      activite_physique:      v('activitePhysique'),
+      note_activite_physique: v('noteActivitePhysique'),
+      consommation:           v('consommation'),
+      note_consommation:      v('noteConsommation'),
+      loisirs:                v('loisirs'),
+      note_loisirs:           v('noteLoisirs'),
+      objets_lieux:           v('objetsLieux'),
+      note_objets_lieux:      v('noteObjetsLieux'),
+      temps_detente:          v('tempsDetente'),
+      note_temps_detente:     v('noteTempsDetente')
+    },
+    section8_ressources: {
+      bienfaits:            v('bienfaits'),
+      activites_relaxantes: v('activitesRelaxantes'),
+      choses_affection:     v('chosesAffection'),
+      lieux_objets:         v('lieuxObjets')
+    },
+    section9_cadre: {
+      frequence_seances:    v('frequenceSeances'),
+      engagement_pratique:  v('engagementPratique')
+    },
+    section10_notes: {
+      notes_libres: v('notesLibres')
+    }
+  };
+}
+
+// ── Export JSON ───────────────────────────────────────────
+function exportJSON() {
+  const data     = collectData();
+  const nom      = (data.section1_informations_generales.nom    || 'patient').toLowerCase();
+  const prenom   = (data.section1_informations_generales.prenom || '').toLowerCase();
+  const date     =  data.section1_informations_generales.date_seance
+                 || new Date().toISOString().split('T')[0];
+  const filename = `fiche_${nom}_${prenom}_${date}.json`
+                    .replace(/\s+/g, '_')
+                    .replace(/[^a-z0-9_\-\.]/gi, '');
+
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('Fiche exportée : ' + filename);
+}
+
+// ── Export PDF via print ──────────────────────────────────
+function exportPDF() {
+  document.getElementById('accordionBody').classList.add('open');
+  window.print();
+}
+
+// ── Import JSON ───────────────────────────────────────────
+function importJSON() {
+  document.getElementById('importInput').click();
+}
+
+function loadJSON(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      applyData(data);
+      showToast('Fiche chargée : ' + file.name);
+    } catch {
+      showToast('Erreur : fichier JSON invalide');
+    }
+    input.value = '';
+  };
+  reader.readAsText(file);
+}
+
+function applyData(data) {
+  const set = (id, val) => { const el = document.getElementById(id); if (el && val !== undefined) el.value = val; };
+  const setCheck = (id, val) => { const el = document.getElementById(id); if (el) el.checked = !!val; };
+
+  const s1 = data.section1_informations_generales || {};
+  set('nom',                  s1.nom);
+  set('prenom',               s1.prenom);
+  set('ddn',                  s1.date_naissance);
+  set('dateSeance',           s1.date_seance);
+  set('adresse',              s1.adresse);
+  set('telephone',            s1.telephone);
+  set('email',                s1.email);
+  set('profession',           s1.profession);
+  set('situationFamiliale',   s1.situation_familiale);
+  set('enfants',              s1.enfants);
+  set('quotidien',            s1.quotidien_hors_travail);
+  restoreNote('noteSituationFamiliale', s1.note_situation_familiale);
+  restoreNote('noteEnfants',            s1.note_enfants);
+
+  const s2 = data.section2_motif_consultation || {};
+  set('motifPrincipal', s2.motif_principal);
+  set('orientation',    s2.orientation);
+  set('depuisQuand',    s2.depuis_quand);
+  set('situations',     s2.situations);
+  set('dejaEssaye',     s2.deja_essaye);
+
+  const s3 = data.section3_objectifs || {};
+  set('objectifSophro',            s3.objectif_sophro);
+  set('objectifSMART',             s3.objectif_SMART);
+  set('ressentiObjectif',          s3.ressenti_objectif);
+  set('projetFutur',               s3.projet_futur);
+  set('delaiObjectif',             s3.delai_objectif);
+  set('indicateurs',               s3.indicateurs_reussite);
+  set('ressourcesSituationnelles', s3.ressources_situationnelles);
+  restoreScale('scaleActuel',  'etatActuel',  s3.etat_actuel_0_10);
+  restoreScale('scaleObjectif','etatObjectif', s3.etat_objectif_0_10);
+
+  const s4 = data.section4_sante || {};
+  set('santeGenerale',        s4.sante_generale);
+  set('traitement',           s4.traitement);
+  set('douleurs',             s4.douleurs);
+  set('sommeil',              s4.sommeil);
+  set('alimentationTroubles', s4.alimentation_troubles);
+  set('stressEmotions',       s4.stress_emotions);
+  restoreNote('noteSanteGenerale',       s4.note_sante_generale);
+  restoreNote('noteTraitement',          s4.note_traitement);
+  restoreNote('noteDouleurs',            s4.note_douleurs);
+  restoreNote('noteSommeil',             s4.note_sommeil);
+  restoreNote('noteAlimentationTroubles',s4.note_alimentation);
+  restoreNote('noteStressEmotions',      s4.note_stress_emotions);
+
+  const s5 = data.section5_stress_traumatique || {};
+  set('evenementDifficile',    s5.evenement_difficile);
+  set('symptomesTrauma',       s5.symptomes);
+  set('accompagnementParallele', s5.accompagnement_parallele);
+  setCheck('focusApaisement', s5.focus_apaisement);
+  setCheck('focusSecurite',   s5.focus_securite_interieure);
+  setCheck('focusConfiance',  s5.focus_confiance);
+
+  const s6 = data.section6_situation_personnelle || {};
+  set('situationPro',    s6.situation_professionnelle);
+  set('situationSociale',s6.situation_sociale);
+  set('vieAmicale',      s6.vie_amicale);
+  set('aversions',       s6.aversions);
+  restoreNote('noteSituationPro',    s6.note_situation_pro);
+  restoreNote('noteSituationSociale',s6.note_situation_sociale);
+  restoreNote('noteVieAmicale',      s6.note_vie_amicale);
+
+  const s7 = data.section7_hygiene_vie || {};
+  set('activitePhysique', s7.activite_physique);
+  set('consommation',     s7.consommation);
+  set('loisirs',          s7.loisirs);
+  set('objetsLieux',      s7.objets_lieux);
+  set('tempsDetente',     s7.temps_detente);
+  restoreNote('noteActivitePhysique', s7.note_activite_physique);
+  restoreNote('noteConsommation',     s7.note_consommation);
+  restoreNote('noteLoisirs',          s7.note_loisirs);
+  restoreNote('noteObjetsLieux',      s7.note_objets_lieux);
+  restoreNote('noteTempsDetente',     s7.note_temps_detente);
+
+  const s8 = data.section8_ressources || {};
+  set('bienfaits',           s8.bienfaits);
+  set('activitesRelaxantes', s8.activites_relaxantes);
+  set('chosesAffection',     s8.choses_affection);
+  set('lieuxObjets',         s8.lieux_objets);
+
+  const s9 = data.section9_cadre || {};
+  set('frequenceSeances',  s9.frequence_seances);
+  set('engagementPratique',s9.engagement_pratique);
+
+  const s10 = data.section10_notes || {};
+  set('notesLibres', s10.notes_libres);
+}
+
+function restoreNote(hiddenId, val) {
+  if (val === undefined || val === '') return;
+  const hidden = document.getElementById(hiddenId);
+  if (!hidden) return;
+  hidden.value = val;
+  const group = hidden.closest('.note-group');
+  if (!group) return;
+  group.querySelectorAll('.note-btn').forEach(btn => {
+    btn.classList.toggle('selected', String(btn.dataset.val) === String(val));
+  });
+}
+
+function restoreScale(containerId, hiddenId, val) {
+  if (val === undefined || val === '') return;
+  document.getElementById(hiddenId).value = val;
+  document.getElementById(containerId).querySelectorAll('.scale-btn').forEach(btn => {
+    btn.classList.toggle('selected', String(btn.dataset.val) === String(val));
+  });
+}
+
+// ── Reset form ────────────────────────────────────────────
+function resetForm() {
+  if (!confirm('Vider entièrement la fiche ? Cette action est irréversible.')) return;
+
+  document.querySelectorAll(
+    'input[type="text"], input[type="email"], input[type="tel"], input[type="date"], textarea, input[type="hidden"]'
+  ).forEach(el => { el.value = ''; });
+
+  document.querySelectorAll('input[type="checkbox"]').forEach(el => { el.checked = false; });
+  document.querySelectorAll('.note-btn, .scale-btn').forEach(btn => btn.classList.remove('selected'));
+
+  document.getElementById('accordionBody').classList.remove('open');
+  document.getElementById('accordionArrow').classList.remove('open');
+
+  const today = new Date();
+  document.getElementById('dateSeance').value = today.toISOString().split('T')[0];
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  showToast('Nouvelle fiche initialisée');
+}
+
+// ── Toast notification ────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
